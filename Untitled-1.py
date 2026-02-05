@@ -97,7 +97,18 @@ class SubjectSelector:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("AI Academy - Вибір предмету")
-        self.root.geometry("400x350")
+        # self.root.geometry("400x350")
+        
+        # Центруємо вікно вибору
+        window_width = 400
+        window_height = 350
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        
+        x_c = int((screen_width / 2) - (window_width / 2))
+        y_c = int((screen_height / 2) - (window_height / 2))
+        
+        self.root.geometry(f"{window_width}x{window_height}+{x_c}+{y_c}")
         self.root.configure(bg="#0f172a")
 
         tk.Label(self.root, text="Оберіть предмет для навчання:",
@@ -126,7 +137,18 @@ class ProfessionalTutorV45:
     def __init__(self, root, subject_name, system_instruction):
         self.root = root
         self.root.title(f"AI Academy v5.0 | Предмет: {subject_name}")  # Показуємо предмет у заголовку
-        self.root.geometry("1000x950")
+        
+        # АДАПТИВНИЙ РОЗМІР ВІКНА (85% від екрану)
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        
+        app_width = int(screen_width * 0.85)
+        app_height = int(screen_height * 0.85)
+        
+        x_pos = int((screen_width - app_width) / 2)
+        y_pos = int((screen_height - app_height) / 2)
+        
+        self.root.geometry(f"{app_width}x{app_height}+{x_pos}+{y_pos}")
         self.root.configure(bg="#020617")
 
         self.level, self.xp = self.load_progress()
@@ -158,24 +180,16 @@ class ProfessionalTutorV45:
             f.write(f"{self.level},{self.xp}")
 
     def setup_ui(self):
-        # Header
+        # 1. Header (TOP)
         self.header = tk.Frame(self.root, bg="#1e293b", height=80)
-        self.header.pack(fill=tk.X)
+        self.header.pack(side=tk.TOP, fill=tk.X)
         self.info_label = tk.Label(self.header, text=f"РІВЕНЬ: {self.level} | XP: {self.xp}/100",
                                    fg="#38bdf8", bg="#1e293b", font=("Consolas", 14, "bold"))
         self.info_label.pack(pady=10)
 
-        # Chat
-        self.chat_area = scrolledtext.ScrolledText(self.root, wrap=tk.WORD, bg="#0f172a",
-                                                   fg="#f1f5f9", font=("Segoe UI", 12), borderwidth=0)
-        self.chat_area.pack(padx=20, pady=10, fill=tk.BOTH, expand=True)
-        self.chat_area.tag_config("user", foreground="#60a5fa", font=("Segoe UI", 12, "bold"))
-        self.chat_area.tag_config("tutor", foreground="#4ade80", font=("Segoe UI", 12, "bold"))
-        self.chat_area.tag_config("code_block", background="#000000", foreground="#5eead4", font=("Consolas", 11))
-
-        # Buttons Panel
+        # 2. Buttons Panel (BOTTOM) - Pack this BEFORE Chat Area so it reserves space
         self.bottom_panel = tk.Frame(self.root, bg="#020617")
-        self.bottom_panel.pack(fill=tk.X, padx=20, pady=20)
+        self.bottom_panel.pack(side=tk.BOTTOM, fill=tk.X, padx=20, pady=20)
 
         self.entry = tk.Text(self.bottom_panel, font=("Arial", 13), bg="#1e293b", fg="white", height=3, padx=10,
                              pady=10)
@@ -214,6 +228,14 @@ class ProfessionalTutorV45:
         self.send_btn = tk.Button(self.btn_frame, text="ВІДПРАВИТИ", command=self.send_message, bg="#38bdf8",
                                   fg="black", width=18, height=2, font=("Arial", 10, "bold"))
         self.send_btn.pack(pady=2)
+
+        # 3. Chat Area (FILLS REMAINING SPACE)
+        self.chat_area = scrolledtext.ScrolledText(self.root, wrap=tk.WORD, bg="#0f172a",
+                                                   fg="#f1f5f9", font=("Segoe UI", 12), borderwidth=0)
+        self.chat_area.pack(padx=20, pady=10, fill=tk.BOTH, expand=True)
+        self.chat_area.tag_config("user", foreground="#60a5fa", font=("Segoe UI", 12, "bold"))
+        self.chat_area.tag_config("tutor", foreground="#4ade80", font=("Segoe UI", 12, "bold"))
+        self.chat_area.tag_config("code_block", background="#000000", foreground="#5eead4", font=("Consolas", 11))
 
     def clean_latex(self, text):
         # 1. Спочатку прибираємо позначки формул
